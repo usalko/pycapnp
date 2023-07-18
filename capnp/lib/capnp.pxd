@@ -28,7 +28,7 @@ cdef class _StringArrayPtr:
     cdef StringPtr * thisptr
     cdef object parent
     cdef size_t size
-    cdef ArrayPtr[StringPtr] asArrayPtr(self) except +reraise_kj_exception
+    cdef ArrayPtr[StringPtr] asArrayPtr(self) # except +reraise_kj_exception
 
 cdef class SchemaLoader:
     cdef C_SchemaLoader * thisptr
@@ -38,7 +38,7 @@ cdef class SchemaParser:
     cdef public dict modules_by_id
     cdef list _all_imports
     cdef _StringArrayPtr _last_import_array
-    cpdef _parse_disk_file(self, displayName, diskPath, imports) except +reraise_kj_exception
+    cpdef _parse_disk_file(self, displayName, diskPath, imports) # except +reraise_kj_exception
 
 cdef class _DynamicOrphan:
     cdef C_DynamicOrphan thisptr
