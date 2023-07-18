@@ -79,10 +79,10 @@ cdef class _DynamicStructBuilder:
     cdef _init(self, DynamicStruct_Builder other, object parent, bint isRoot=?, bint tryRegistry=?)
 
     cdef _check_write(self)
-    cpdef to_bytes(_DynamicStructBuilder self) except +reraise_kj_exception
-    cpdef to_segments(_DynamicStructBuilder self) except +reraise_kj_exception
-    cpdef _to_bytes_packed_helper(_DynamicStructBuilder self, word_count) except +reraise_kj_exception
-    cpdef to_bytes_packed(_DynamicStructBuilder self) except +reraise_kj_exception
+    cpdef to_bytes(_DynamicStructBuilder self) # except +reraise_kj_exception
+    cpdef to_segments(_DynamicStructBuilder self) # except +reraise_kj_exception
+    cpdef _to_bytes_packed_helper(_DynamicStructBuilder self, word_count) # except +reraise_kj_exception
+    cpdef to_bytes_packed(_DynamicStructBuilder self) # except +reraise_kj_exception
 
     cpdef _get(self, field)
     cpdef _set(self, field, value)
@@ -128,7 +128,7 @@ cdef class _DynamicEnum:
     cdef public object _parent
 
     cdef _init(self, capnp.DynamicEnum other, object parent)
-    cpdef _as_str(self) except +reraise_kj_exception
+    cpdef _as_str(self) # except +reraise_kj_exception
 
 cdef class _DynamicListBuilder:
     cdef C_DynamicList.Builder thisptr
@@ -146,11 +146,11 @@ cdef class _DynamicListBuilder:
 cdef class _MessageBuilder:
     cdef schema_cpp.MessageBuilder * thisptr
     cpdef init_root(self, schema)
-    cpdef get_root(self, schema) except +reraise_kj_exception
-    cpdef get_root_as_any(self) except +reraise_kj_exception
-    cpdef set_root(self, value) except +reraise_kj_exception
-    cpdef get_segments_for_output(self) except +reraise_kj_exception
-    cpdef new_orphan(self, schema) except +reraise_kj_exception
+    cpdef get_root(self, schema) # except +reraise_kj_exception
+    cpdef get_root_as_any(self) # except +reraise_kj_exception
+    cpdef set_root(self, value) # except +reraise_kj_exception
+    cpdef get_segments_for_output(self) # except +reraise_kj_exception
+    cpdef new_orphan(self, schema) # except +reraise_kj_exception
 
 cdef to_python_reader(C_DynamicValue.Reader self, object parent)
 cdef to_python_builder(C_DynamicValue.Builder self, object parent)
