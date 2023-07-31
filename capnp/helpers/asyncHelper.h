@@ -56,9 +56,10 @@ void waitVoidPromise(kj::Promise<void> *promise, kj::WaitScope &scope)
     promise->wait(scope);
   }
   catch (kj::Exception& exn) {
-    auto obj = wrap_kj_exception_for_reraise(exn);
-    PyErr_SetObject((PyObject*)obj->ob_type, obj);
-    Py_DECREF(obj);
+    // auto obj = wrap_kj_exception_for_reraise(exn);
+    // PyErr_SetObject((PyObject*)obj->ob_type, obj);
+    // Py_DECREF(obj);
+    PyErr_SetString(PyExc_RuntimeError, exn.what());
   }
   catch (const std::exception& exn) {
     PyErr_SetString(PyExc_RuntimeError, exn.what());
@@ -77,9 +78,10 @@ PyObject *waitPyPromise(kj::Promise<PyObject *> *promise, kj::WaitScope &scope)
     return promise->wait(scope);
   }
   catch (kj::Exception& exn) {
-    auto obj = wrap_kj_exception_for_reraise(exn);
-    PyErr_SetObject((PyObject*)obj->ob_type, obj);
-    Py_DECREF(obj);
+    // auto obj = wrap_kj_exception_for_reraise(exn);
+    // PyErr_SetObject((PyObject*)obj->ob_type, obj);
+    // Py_DECREF(obj);
+    PyErr_SetString(PyExc_RuntimeError, exn.what());
     return NULL;
   }
   catch (const std::exception& exn) {
