@@ -1608,7 +1608,7 @@ cdef class _DynamicStructPipeline:
     def __dealloc__(self):
         del self.thisptr
 
-    cpdef _get(self, field) except +reraise_kj_exception:
+    cpdef _get(self, field): #except +reraise_kj_exception:
         cdef int type = (<C_DynamicValue.Pipeline>self.thisptr.get(field)).getType()
         if type == capnp.TYPE_CAPABILITY:
             return _DynamicCapabilityClient()._init(
@@ -1678,7 +1678,7 @@ cdef class _DynamicObjectReader:
         self._parent = parent
         return self
 
-    cpdef as_struct(self, schema) except +reraise_kj_exception:
+    cpdef as_struct(self, schema): #except +reraise_kj_exception:
         cdef _StructSchema s
         if hasattr(schema, 'schema'):
             s = schema.schema
@@ -1687,7 +1687,7 @@ cdef class _DynamicObjectReader:
 
         return _DynamicStructReader()._init(self.thisptr.getAs(s._thisptr()), self._parent)
 
-    cpdef as_interface(self, schema) except +reraise_kj_exception:
+    cpdef as_interface(self, schema): #except +reraise_kj_exception:
         cdef _InterfaceSchema s
         if hasattr(schema, 'schema'):
             s = schema.schema
@@ -1696,7 +1696,7 @@ cdef class _DynamicObjectReader:
 
         return _DynamicCapabilityClient()._init(self.thisptr.getAsCapability(s.thisptr), self._parent)
 
-    cpdef as_list(self, schema) except +reraise_kj_exception:
+    cpdef as_list(self, schema): #except +reraise_kj_exception:
         cdef _ListSchema s
         if hasattr(schema, 'schema'):
             s = schema.schema
@@ -1705,7 +1705,7 @@ cdef class _DynamicObjectReader:
 
         return _DynamicListReader()._init(self.thisptr.getAsList(s.thisptr), self._parent)
 
-    cpdef as_text(self) except +reraise_kj_exception:
+    cpdef as_text(self): #except +reraise_kj_exception:
         return (<char*>self.thisptr.getAsText().cStr())[:]
 
 
@@ -1721,7 +1721,7 @@ cdef class _DynamicObjectBuilder:
     def __dealloc__(self):
         del self.thisptr
 
-    cpdef as_struct(self, schema) except +reraise_kj_exception:
+    cpdef as_struct(self, schema): #except +reraise_kj_exception:
         cdef _StructSchema s
         if hasattr(schema, 'schema'):
             s = schema.schema
@@ -1730,7 +1730,7 @@ cdef class _DynamicObjectBuilder:
 
         return _DynamicStructBuilder()._init(self.thisptr.getAs(s._thisptr()), self._parent)
 
-    cpdef as_interface(self, schema) except +reraise_kj_exception:
+    cpdef as_interface(self, schema): #except +reraise_kj_exception:
         cdef _InterfaceSchema s
         if hasattr(schema, 'schema'):
             s = schema.schema
@@ -1739,7 +1739,7 @@ cdef class _DynamicObjectBuilder:
 
         return _DynamicCapabilityClient()._init(self.thisptr.getAsCapability(s.thisptr), self._parent)
 
-    cpdef as_list(self, schema) except +reraise_kj_exception:
+    cpdef as_list(self, schema): #except +reraise_kj_exception:
         cdef _ListSchema s
         if hasattr(schema, 'schema'):
             s = schema.schema
@@ -1765,7 +1765,7 @@ cdef class _DynamicObjectBuilder:
 
         return _DynamicListBuilder()._init(self.thisptr.initAsList(s.thisptr, size), self._parent)
 
-    cpdef as_text(self) except +reraise_kj_exception:
+    cpdef as_text(self): #except +reraise_kj_exception:
         return (<char*>self.thisptr.getAsText().cStr())[:]
 
     cpdef as_reader(self):
@@ -1778,13 +1778,13 @@ cdef class _EventLoop:
     def __init__(self):
         self._init()
 
-    cdef _init(self) except +reraise_kj_exception:
+    cdef _init(self): #except +reraise_kj_exception:
         self.thisptr = new capnp.AsyncIoContext(capnp.setupAsyncIo())
 
     def __dealloc__(self):
         del self.thisptr #TODO:MEMORY: fix problems with Promises still being around
 
-    cpdef _remove(self) except +reraise_kj_exception:
+    cpdef _remove(self): #except +reraise_kj_exception:
         del self.thisptr
         self.thisptr = NULL
 
@@ -1825,7 +1825,7 @@ cdef class _Timer:
         self.thisptr = timer
         return self
 
-    cpdef after_delay(self, time) except +reraise_kj_exception:
+    cpdef after_delay(self, time): #except +reraise_kj_exception:
         return _VoidPromise()._init(self.thisptr.afterDelay(capnp.Nanoseconds(time)))
 
 
@@ -1966,7 +1966,7 @@ cdef class _Promise:
     def __dealloc__(self):
         del self.thisptr
 
-    cpdef wait(self) except +reraise_kj_exception:
+    cpdef wait(self): #except +reraise_kj_exception:
         if self.is_consumed:
             raise KjException(
                 "Promise was already used in a consuming operation. You can no longer use this Promise object")
@@ -1978,7 +1978,7 @@ cdef class _Promise:
 
         return ret
 
-    cpdef then(self, func, error_func=None) except +reraise_kj_exception:
+    cpdef then(self, func, error_func=None): #except +reraise_kj_exception:
         if self.is_consumed:
             raise KjException(
                 "Promise was already used in a consuming operation. You can no longer use this Promise object")
@@ -2009,7 +2009,7 @@ cdef class _Promise:
 
         return ret
 
-    cpdef cancel(self, numParents=1) except +reraise_kj_exception:
+    cpdef cancel(self, numParents=1): #except +reraise_kj_exception:
         if numParents > 0 and hasattr(self._parent, 'cancel'):
             self._parent.cancel(numParents - 1)
 
@@ -2037,7 +2037,7 @@ cdef class _VoidPromise:
     def __dealloc__(self):
         del self.thisptr
 
-    cpdef wait(self) except +reraise_kj_exception:
+    cpdef wait(self): #except +reraise_kj_exception:
         if self.is_consumed:
             raise KjException(
                 "Promise was already used in a consuming operation. You can no longer use this Promise object")
@@ -2046,7 +2046,7 @@ cdef class _VoidPromise:
 
         self.is_consumed = True
 
-    cpdef then(self, func, error_func=None) except +reraise_kj_exception:
+    cpdef then(self, func, error_func=None): #except +reraise_kj_exception:
         if self.is_consumed:
             raise KjException(
                 "Promise was already used in a consuming operation. You can no longer use this Promise object")
@@ -2067,7 +2067,7 @@ cdef class _VoidPromise:
         return _Promise()._init(new_promise.thisptr.attach(
             capnp.makePyRefCounter(<PyObject *>func), capnp.makePyRefCounter(<PyObject *>error_func)), new_promise)
 
-    cpdef as_pypromise(self) except +reraise_kj_exception:
+    cpdef as_pypromise(self): #except +reraise_kj_exception:
         if self.is_consumed:
             raise KjException(
                 "Promise was already used in a consuming operation. You can no longer use this Promise object")
@@ -2083,7 +2083,7 @@ cdef class _VoidPromise:
 
         return ret
 
-    cpdef cancel(self, numParents=1) except +reraise_kj_exception:
+    cpdef cancel(self, numParents=1): #except +reraise_kj_exception:
         if numParents > 0 and hasattr(self._parent, 'cancel'):
             self._parent.cancel(numParents - 1)
 
@@ -2111,7 +2111,7 @@ cdef class _RemotePromise:
     def __dealloc__(self):
         del self.thisptr
 
-    cpdef _wait(self) except +reraise_kj_exception:
+    cpdef _wait(self): #except +reraise_kj_exception:
         return _Response()._init_childptr(
             helpers.waitRemote(self.thisptr, deref(self._event_loop.thisptr).waitScope), self._parent)
 
@@ -2143,13 +2143,13 @@ cdef class _RemotePromise:
 
         return ret
 
-    cpdef as_pypromise(self) except +reraise_kj_exception:
+    cpdef as_pypromise(self): #except +reraise_kj_exception:
         if self.is_consumed:
             raise KjException(
                 "Promise was already used in a consuming operation. You can no longer use this Promise object")
         return _Promise()._init(helpers.convert_to_pypromise(deref(self.thisptr)), self)
 
-    cpdef then(self, func, error_func=None) except +reraise_kj_exception:
+    cpdef then(self, func, error_func=None): #except +reraise_kj_exception:
         """Promise pipelining, use to queue up operations on a promise before executing the promise."""
         if self.is_consumed:
             raise KjException(
@@ -2171,7 +2171,7 @@ cdef class _RemotePromise:
         return _Promise()._init(new_promise.thisptr.attach(
             capnp.makePyRefCounter(<PyObject *>func), capnp.makePyRefCounter(<PyObject *>error_func)), new_promise)
 
-    cpdef _get(self, field) except +reraise_kj_exception:
+    cpdef _get(self, field): #except +reraise_kj_exception:
         cdef int type = (<C_DynamicValue.Pipeline>self.thisptr.get(field)).getType()
         if type == capnp.TYPE_CAPABILITY:
             return _DynamicCapabilityClient()._init(
@@ -2202,7 +2202,7 @@ cdef class _RemotePromise:
     def to_dict(self, verbose=False, ordered=False):
         return _to_dict(self, verbose, ordered)
 
-    cpdef cancel(self, numParents=1) except +reraise_kj_exception:
+    cpdef cancel(self, numParents=1): #except +reraise_kj_exception:
         if numParents > 0 and hasattr(self._parent, 'cancel'):
             self._parent.cancel(numParents - 1)
 
@@ -2221,7 +2221,7 @@ cdef class _RemotePromise:
     #     return ret
 
 
-cpdef join_promises(promises) except +reraise_kj_exception:
+cpdef join_promises(promises): #except +reraise_kj_exception:
     heap = capnp.heapArrayBuilderPyPromise(len(promises))
 
     new_promises = []
@@ -2348,7 +2348,7 @@ cdef class _DynamicCapabilityClient:
             for key, val in kwargs.items():
                 _setDynamicField(<DynamicStruct_Builder>deref(request), key, val, self)
 
-    cpdef _send_helper(self, name, word_count, args, kwargs) except +reraise_kj_exception:
+    cpdef _send_helper(self, name, word_count, args, kwargs): #except +reraise_kj_exception:
         # if word_count is None:
         #     word_count = 0
         cdef Request * request = new Request(self.thisptr.newRequest(name)) # TODO: pass word_count
@@ -2357,7 +2357,7 @@ cdef class _DynamicCapabilityClient:
 
         return _RemotePromise()._init(request.send(), self)
 
-    cpdef _request_helper(self, name, firstSegmentWordSize, args, kwargs) except +reraise_kj_exception:
+    cpdef _request_helper(self, name, firstSegmentWordSize, args, kwargs): #except +reraise_kj_exception:
         # if word_count is None:
         #     word_count = 0
         cdef _Request req = _Request()._init_child(self.thisptr.newRequest(name), self)
@@ -2386,7 +2386,7 @@ cdef class _DynamicCapabilityClient:
         except KjException as e:
             raise e._to_python(), None, _sys.exc_info()[2]
 
-    cpdef upcast(self, schema) except +reraise_kj_exception:
+    cpdef upcast(self, schema): #except +reraise_kj_exception:
         cdef _InterfaceSchema s
         if hasattr(schema, 'schema'):
             s = schema.schema
@@ -2395,7 +2395,7 @@ cdef class _DynamicCapabilityClient:
 
         return _DynamicCapabilityClient()._init(self.thisptr.upcast(s.thisptr), self._parent)
 
-    cpdef cast_as(self, schema) except +reraise_kj_exception:
+    cpdef cast_as(self, schema): #except +reraise_kj_exception:
         cdef _InterfaceSchema s
         if hasattr(schema, 'schema'):
             s = schema.schema
@@ -2448,7 +2448,7 @@ cdef class _TwoPartyVatNetwork:
         self.thisptr = makeTwoPartyVatNetwork(deref(pipe._pipe.ends[0]), side, opts)
         return self
 
-    cpdef on_disconnect(self) except +reraise_kj_exception:
+    cpdef on_disconnect(self): #except +reraise_kj_exception:
         return _VoidPromise()._init(deref(self.thisptr).onDisconnect(), self)
 
 
@@ -2542,10 +2542,10 @@ cdef class TwoPartyClient:
             sock.setsockopt(_socket.IPPROTO_TCP, _socket.TCP_NODELAY, 1)
         return sock
 
-    cpdef bootstrap(self) except +reraise_kj_exception:
+    cpdef bootstrap(self): #except +reraise_kj_exception:
         return _CapabilityClient()._init(helpers.bootstrapHelper(deref(self.thisptr)), self)
 
-    cpdef on_disconnect(self) except +reraise_kj_exception:
+    cpdef on_disconnect(self): #except +reraise_kj_exception:
         return _VoidPromise()._init(deref(self._network.thisptr).onDisconnect())
 
 
@@ -2668,7 +2668,7 @@ cdef class TwoPartyServer:
         del self.thisptr
         del self._task_set
 
-    cpdef on_disconnect(self) except +reraise_kj_exception:
+    cpdef on_disconnect(self): #except +reraise_kj_exception:
         return _VoidPromise()._init(deref(self._network.thisptr).onDisconnect())
 
     def poll_once(self):
@@ -2691,7 +2691,7 @@ cdef class TwoPartyServer:
 
         wait_forever()
 
-    cpdef bootstrap(self) except +reraise_kj_exception:
+    cpdef bootstrap(self): #except +reraise_kj_exception:
         return _CapabilityClient()._init(helpers.bootstrapHelperServer(deref(self.thisptr)), self)
 
     property port:
@@ -2714,7 +2714,7 @@ cdef class _TwoWayPipe:
     def __init__(self):
         self._init()
 
-    cpdef _init(self) except +reraise_kj_exception:
+    cpdef _init(self): #except +reraise_kj_exception:
         self._event_loop = C_DEFAULT_EVENT_LOOP_GETTER()
         # Create two way pipe using AsyncIoContext
         self._pipe = self._event_loop.makeTwoWayPipe()
@@ -2726,7 +2726,7 @@ cdef class _FdAsyncIoStream(_AsyncIoStream):
     def __init__(self, int fd):
         self._init(fd)
 
-    cdef _init(self, int fd) except +reraise_kj_exception:
+    cdef _init(self, int fd): #except +reraise_kj_exception:
         self._event_loop = C_DEFAULT_EVENT_LOOP_GETTER()
         self.thisptr = self._event_loop.wrapSocketFd(fd)
 
