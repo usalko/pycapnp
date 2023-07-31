@@ -1966,7 +1966,7 @@ cdef class _Promise:
     def __dealloc__(self):
         del self.thisptr
 
-    cpdef wait(self) except +reraise_kj_exception:
+    cpdef wait(self): #except +reraise_kj_exception:
         if self.is_consumed:
             raise KjException(
                 "Promise was already used in a consuming operation. You can no longer use this Promise object")
@@ -2037,7 +2037,7 @@ cdef class _VoidPromise:
     def __dealloc__(self):
         del self.thisptr
 
-    cpdef wait(self) except +reraise_kj_exception:
+    cpdef wait(self): #except +reraise_kj_exception:
         if self.is_consumed:
             raise KjException(
                 "Promise was already used in a consuming operation. You can no longer use this Promise object")
