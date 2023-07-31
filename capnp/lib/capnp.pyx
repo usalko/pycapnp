@@ -1008,7 +1008,7 @@ cdef class _DynamicEnum:
         self._parent = parent
         return self
 
-    cpdef _as_str(self) except +reraise_kj_exception:
+    cpdef _as_str(self): #except +reraise_kj_exception:
         return <char*>helpers.fixMaybe(self.thisptr.getEnumerant()).getProto().getName().cStr()
 
     property raw:
@@ -1300,7 +1300,7 @@ cdef class _DynamicStructBuilder:
         _write_packed_message_to_fd(file.fileno(), self._parent)
         self._is_written = True
 
-    cpdef to_bytes(_DynamicStructBuilder self) except +reraise_kj_exception:
+    cpdef to_bytes(_DynamicStructBuilder self): #except +reraise_kj_exception:
         """Returns the struct's containing message as a Python bytes object in the unpacked binary format.
 
         This is inefficient; it makes several copies.
@@ -1317,7 +1317,7 @@ cdef class _DynamicStructBuilder:
         self._is_written = True
         return ret
 
-    cpdef to_segments(_DynamicStructBuilder self) except +reraise_kj_exception:
+    cpdef to_segments(_DynamicStructBuilder self): #except +reraise_kj_exception:
         """Returns the struct's containing message as a Python list of Python bytes objects.
 
         This avoids making copies.
@@ -1331,14 +1331,14 @@ cdef class _DynamicStructBuilder:
         segments = builder.get_segments_for_output()
         return segments
 
-    cpdef _to_bytes_packed_helper(_DynamicStructBuilder self, word_count) except +reraise_kj_exception:
+    cpdef _to_bytes_packed_helper(_DynamicStructBuilder self, word_count): #except +reraise_kj_exception:
         cdef _MessageBuilder builder = self._parent
         array = helpers.messageToPackedBytes(deref(builder.thisptr), word_count)
         cdef const char* ptr = <const char *>array.begin()
         cdef bytes ret = ptr[:array.size()]
         return ret
 
-    cpdef to_bytes_packed(_DynamicStructBuilder self) except +reraise_kj_exception:
+    cpdef to_bytes_packed(_DynamicStructBuilder self): #except +reraise_kj_exception:
         self._check_write()
         word_count = self.total_size.word_count + 2
 
@@ -3435,7 +3435,7 @@ cdef class _StringArrayPtr:
     def __dealloc__(self):
         free(self.thisptr)
 
-    cdef ArrayPtr[StringPtr] asArrayPtr(self) except +reraise_kj_exception:
+    cdef ArrayPtr[StringPtr] asArrayPtr(self): #except +reraise_kj_exception:
         return ArrayPtr[StringPtr](self.thisptr, self.size)
 
 
@@ -3454,7 +3454,7 @@ cdef class SchemaParser:
     def __dealloc__(self):
         del self.thisptr
 
-    cpdef _parse_disk_file(self, displayName, diskPath, imports) except +reraise_kj_exception:
+    cpdef _parse_disk_file(self, displayName, diskPath, imports): #except +reraise_kj_exception:
         cdef _StringArrayPtr importArray
 
         if self._last_import_array and self._last_import_array.parent == imports:
@@ -3622,7 +3622,7 @@ cdef class _MessageBuilder:
             s = schema
         return _DynamicStructBuilder()._init(self.thisptr.initRootDynamicStruct(s._thisptr()), self, True)
 
-    cpdef get_root(self, schema) except +reraise_kj_exception:
+    cpdef get_root(self, schema): #except +reraise_kj_exception:
         """A method for instantiating Cap'n Proto structs, from an already pre-written buffer
 
         Don't use this method unless you know what you're doing. You probably
@@ -3647,7 +3647,7 @@ cdef class _MessageBuilder:
             s = schema
         return _DynamicStructBuilder()._init(self.thisptr.getRootDynamicStruct(s._thisptr()), self, True)
 
-    cpdef get_root_as_any(self) except +reraise_kj_exception:
+    cpdef get_root_as_any(self): #except +reraise_kj_exception:
         """A method for getting a Cap'n Proto AnyPointer, from an already pre-written buffer
 
         Don't use this method unless you know what you're doing.
@@ -3657,7 +3657,7 @@ cdef class _MessageBuilder:
         """
         return _DynamicObjectBuilder()._init(self.thisptr.getRootAnyPointer(), self)
 
-    cpdef set_root(self, value) except +reraise_kj_exception:
+    cpdef set_root(self, value): #except +reraise_kj_exception:
         """A method for instantiating Cap'n Proto structs by copying from an existing struct
 
         :type value: :class:`_DynamicStructReader`
@@ -3673,7 +3673,7 @@ cdef class _MessageBuilder:
             self.thisptr.setRootDynamicStruct((<_DynamicStructReader>value).thisptr)
             return self.get_root(value.schema)
 
-    cpdef get_segments_for_output(self) except +reraise_kj_exception:
+    cpdef get_segments_for_output(self): #except +reraise_kj_exception:
         segments = self.thisptr.getSegmentsForOutput()
         res = []
         cdef const char* ptr
@@ -3685,7 +3685,7 @@ cdef class _MessageBuilder:
             res.append(segment_bytes)
         return res
 
-    cpdef new_orphan(self, schema) except +reraise_kj_exception:
+    cpdef new_orphan(self, schema): #except +reraise_kj_exception:
         """A method for instantiating Cap'n Proto orphans
 
         Don't use this method unless you know what you're doing.
@@ -3743,7 +3743,7 @@ cdef class _MessageReader:
     def __init__(self):
         raise NotImplementedError("This is an abstract base class")
 
-    cpdef get_root(self, schema) except +reraise_kj_exception:
+    cpdef get_root(self, schema): #except +reraise_kj_exception:
         """A method for instantiating Cap'n Proto structs
 
         You will need to pass in a schema to specify which struct to
@@ -3767,7 +3767,7 @@ cdef class _MessageReader:
             s = schema
         return _DynamicStructReader()._init(self.thisptr.getRootDynamicStruct(s._thisptr()), self)
 
-    cpdef get_root_as_any(self) except +reraise_kj_exception:
+    cpdef get_root_as_any(self): #except +reraise_kj_exception:
         """A method for getting a Cap'n Proto AnyPointer, from an already pre-written buffer
 
         Don't use this method unless you know what you're doing.
