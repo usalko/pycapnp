@@ -48,14 +48,31 @@ kj::Timer * getTimer(kj::AsyncIoContext * context) {
   return &context->lowLevelProvider->getTimer();
 }
 
-void waitVoidPromise(kj::Promise<void> * promise, kj::WaitScope & scope) {
+void waitVoidPromise(kj::Promise<void> *promise, kj::WaitScope &scope)
+{
   GILRelease gil;
-  promise->wait(scope);
+  try
+  {
+    promise->wait(scope);
+  }
+  catch (...)
+  {
+    PyErr_SetObject(PyExc_RuntimeError, "Unexpected exception in C++");
+  }
 }
 
-PyObject * waitPyPromise(kj::Promise<PyObject *> * promise, kj::WaitScope & scope) {
+PyObject *waitPyPromise(kj::Promise<PyObject *> *promise, kj::WaitScope &scope)
+{
   GILRelease gil;
-  return promise->wait(scope);
+  try
+  {
+    return promise->wait(scope);
+  }
+  catch (...)
+  {
+    PyErr_SetObject(PyExc_RuntimeError, "Unexpected exception in C++");
+    return NULL;
+  }
 }
 
 capnp::Response< ::capnp::DynamicStruct> * waitRemote(capnp::RemotePromise< ::capnp::DynamicStruct> * promise, kj::WaitScope & scope) {
