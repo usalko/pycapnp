@@ -133,7 +133,25 @@ PyObject *waitPyPromise(kj::Promise<PyObject *> *promise, kj::WaitScope &scope)
 
 capnp::Response< ::capnp::DynamicStruct> * waitRemote(capnp::RemotePromise< ::capnp::DynamicStruct> * promise, kj::WaitScope & scope) {
   GILRelease gil;
-  return new capnp::Response< ::capnp::DynamicStruct>(promise->wait(scope));
+  try {
+    return new capnp::Response< ::capnp::DynamicStruct>(promise->wait(scope));
+  }
+  catch (kj::Exception& exn) {
+    // auto obj = wrap_kj_exception_for_reraise(exn);
+    // PyErr_SetObject((PyObject*)obj->ob_type, obj);
+    // Py_DECREF(obj);
+    PyErr_SetString(PyExc_RuntimeError, exn.getDescription().cStr());
+    return NULL;
+  }
+  catch (const std::exception& exn) {
+    PyErr_SetString(PyExc_RuntimeError, exn.what());
+    return NULL;
+  }
+  catch (...)
+  {
+    PyErr_SetString(PyExc_RuntimeError, "Unknown exception");
+    return NULL;
+  }
 }
 
 bool pollRemote(capnp::RemotePromise< ::capnp::DynamicStruct> * promise, kj::WaitScope & scope) {

@@ -2,6 +2,7 @@
 
 #include "kj/async.h"
 #include "kj/async-io.h"
+#include "capabilityHelper.h"
 
 class AsyncIoStreamReadHelper {
 public:
@@ -22,7 +23,25 @@ public:
     bool result = promise.poll(*wait_scope);
     if (result) {
       ready = true;
-      buffer_read_size = promise.wait(*wait_scope);
+      try {
+        buffer_read_size = promise.wait(*wait_scope);
+      }
+      catch (kj::Exception& exn) {
+        // auto obj = wrap_kj_exception_for_reraise(exn);
+        // PyErr_SetObject((PyObject*)obj->ob_type, obj);
+        // Py_DECREF(obj);
+        PyErr_SetString(PyExc_RuntimeError, exn.getDescription().cStr());
+        return NULL;
+      }
+      catch (const std::exception& exn) {
+        PyErr_SetString(PyExc_RuntimeError, exn.what());
+        return NULL;
+      }
+      catch (...)
+      {
+        PyErr_SetString(PyExc_RuntimeError, "Unknown exception");
+        return NULL;
+      }
     }
     return result;
   }

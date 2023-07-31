@@ -61,7 +61,7 @@ cdef extern from "kj/async.h" namespace " ::kj":
         Promise()
         Promise(Promise)
         Promise(T)
-        T wait(WaitScope)
+        T wait(WaitScope) except +reraise_kj_exception
         bool poll(WaitScope)
         # ForkedPromise<T> fork()
         # Promise<T> exclusiveJoin(Promise<T>&& other)
