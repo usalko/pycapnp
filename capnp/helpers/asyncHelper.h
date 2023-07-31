@@ -12,14 +12,56 @@ public:
   }
   virtual bool wait() {
     GILAcquire gil;
-    PyObject_CallMethod(py_event_port, const_cast<char *>("wait"), NULL);
-    return true;  // TODO: get the bool result from python
+    try {
+      PyObject_CallMethod(py_event_port, const_cast<char *>("wait"), NULL);
+      return true;  // TODO: get the bool result from python
+    }
+    catch (kj::Exception& exn) {
+      // auto obj = wrap_kj_exception_for_reraise(exn);
+      // PyErr_SetObject((PyObject*)obj->ob_type, obj);
+      // Py_DECREF(obj);
+      // PyErr_SetString(PyExc_RuntimeError, exn.getDescription().cStr());
+      PyErr_SetObject(PyExc_RuntimeError, exn.getDescription().cStr());
+      return false;
+    }
+    catch (const std::exception& exn) {
+      // PyErr_SetString(PyExc_RuntimeError, exn.what());
+      PyErr_SetObject(PyExc_RuntimeError, exn.what());
+      return false;
+    }
+    catch (...)
+    {
+      // PyErr_SetString(PyExc_RuntimeError, "Unknown exception");
+      PyErr_SetObject(PyExc_RuntimeError, "Unknown exception");
+      return false;
+    }
   }
 
   virtual bool poll() {
     GILAcquire gil;
-    PyObject_CallMethod(py_event_port, const_cast<char *>("poll"), NULL);
-    return true;  // TODO: get the bool result from python
+    try {
+      PyObject_CallMethod(py_event_port, const_cast<char *>("poll"), NULL);
+      return true;  // TODO: get the bool result from python
+    }
+    catch (kj::Exception& exn) {
+      // auto obj = wrap_kj_exception_for_reraise(exn);
+      // PyErr_SetObject((PyObject*)obj->ob_type, obj);
+      // Py_DECREF(obj);
+      // PyErr_SetString(PyExc_RuntimeError, exn.getDescription().cStr());
+      PyErr_SetObject(PyExc_RuntimeError, exn.getDescription().cStr());
+      return false;
+    }
+    catch (const std::exception& exn) {
+      // PyErr_SetString(PyExc_RuntimeError, exn.what());
+      PyErr_SetObject(PyExc_RuntimeError, exn.what());
+      return false;
+    }
+    catch (...)
+    {
+      // PyErr_SetString(PyExc_RuntimeError, "Unknown exception");
+      PyErr_SetObject(PyExc_RuntimeError, "Unknown exception");
+      return false;
+    }
   }
 
   virtual void setRunnable(bool runnable) {
@@ -59,14 +101,17 @@ void waitVoidPromise(kj::Promise<void> *promise, kj::WaitScope &scope)
     // auto obj = wrap_kj_exception_for_reraise(exn);
     // PyErr_SetObject((PyObject*)obj->ob_type, obj);
     // Py_DECREF(obj);
-    PyErr_SetString(PyExc_RuntimeError, exn.getDescription().cStr());
+    // PyErr_SetString(PyExc_RuntimeError, exn.getDescription().cStr());
+    PyErr_SetObject(PyExc_RuntimeError, exn.getDescription().cStr());
   }
   catch (const std::exception& exn) {
-    PyErr_SetString(PyExc_RuntimeError, exn.what());
+    // PyErr_SetString(PyExc_RuntimeError, exn.what());
+    PyErr_SetObject(PyExc_RuntimeError, exn.what());
   }
   catch (...)
   {
-    PyErr_SetString(PyExc_RuntimeError, "Unknown exception");
+    // PyErr_SetString(PyExc_RuntimeError, "Unknown exception");
+    PyErr_SetObject(PyExc_RuntimeError, "Unknown exception");
   }
 }
 
@@ -81,16 +126,19 @@ PyObject *waitPyPromise(kj::Promise<PyObject *> *promise, kj::WaitScope &scope)
     // auto obj = wrap_kj_exception_for_reraise(exn);
     // PyErr_SetObject((PyObject*)obj->ob_type, obj);
     // Py_DECREF(obj);
-    PyErr_SetString(PyExc_RuntimeError, exn.getDescription().cStr());
+    // PyErr_SetString(PyExc_RuntimeError, exn.getDescription().cStr());
+    PyErr_SetObject(PyExc_RuntimeError, exn.getDescription().cStr());
     return NULL;
   }
   catch (const std::exception& exn) {
-    PyErr_SetString(PyExc_RuntimeError, exn.what());
+    // PyErr_SetString(PyExc_RuntimeError, exn.what());
+    PyErr_SetObject(PyExc_RuntimeError, exn.what());
     return NULL;
   }
   catch (...)
   {
-    PyErr_SetString(PyExc_RuntimeError, "Unknown exception");
+    // PyErr_SetString(PyExc_RuntimeError, "Unknown exception");
+    PyErr_SetObject(PyExc_RuntimeError, "Unknown exception");
     return NULL;
   }
 }
