@@ -9,8 +9,6 @@ import shutil
 import struct
 import sys
 
-import pkgconfig
-
 from distutils.command.clean import clean as _clean
 
 from setuptools import setup, Extension
@@ -135,14 +133,15 @@ class build_libcapnp_ext(build_ext_c):
                 self.library_dirs += [os.path.join(capnp_dir, "..", "lib")]
 
             # Look for capnproto using pkg-config (and minimum version)
-            try:
-                if pkgconfig.installed("capnp", ">= 0.7.0"):
-                    need_build = False
-                else:
-                    need_build = True
-            except EnvironmentError:
-                # pkg-config not available in path
-                need_build = True
+            # try:
+            #     if pkgconfig.installed("capnp", ">= 0.7.0"):
+            #         need_build = False
+            #     else:
+            #         need_build = True
+            # except EnvironmentError:
+            #     # pkg-config not available in path
+            #     need_build = True
+            need_build = True
 
         if need_build:
             print(
